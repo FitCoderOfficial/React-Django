@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { Form, Icon, Input, Button, Spin } from 'antd';
 import { NavLink } from 'react-router-dom';
-
+import * as actions from '../store/actions/auth'
 
 const FormItem = Form.Item;
 const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
@@ -15,9 +15,10 @@ class NormalLoginForm extends React.Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
+        this.props.onAuth(values.userName, values.password);
       }
     });
+    this.props.history.push('/');
   }
 
   render() {
@@ -43,28 +44,30 @@ class NormalLoginForm extends React.Component {
                 <Form onSubmit={this.handleSubmit} className="login-form">
                     <FormItem>
                     {getFieldDecorator('userName', {
-                        rules: [{ required: true, message: 'Please input your username!' }],
+                        rules: [{ required: true, message: '아이디를 넣어야지!' }],
                     })(
                         <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Username" />
                     )}
                     </FormItem>
                     <FormItem>
                     {getFieldDecorator('password', {
-                        rules: [{ required: true, message: 'Please input your Password!' }],
+                        rules: [{ required: true, message: '비밀번호를 넣어야지!' }],
                     })(
                         <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="Password" />
                     )}
                     </FormItem>
+
                     <FormItem>
                         <Button type="primary" htmlType="submit" style={{marginRight: '10px'}}>
                             로그인
                         </Button>
-                        Or
-                        <NavLink style={{marginRight: '10px'}} to='/signup/'>
-                            가입하기
-                        </NavLink>
-                    
+                        아직 계정이 없다면
+                         <NavLink 
+                         style={{marginRight: '10px'}}
+                         to='/signup/'> 가입하기
+                        </NavLink>                    
                     </FormItem>
+                    
                 </Form>
             }
       </div>
@@ -81,4 +84,10 @@ const mapStateToProps = state => {
     }
 }
 
-export default connect(mapStateToProps)(WrappedNormalLoginForm);
+const mapDispathchToProps = dispatch => {
+    return {
+        onAuth: (username, password) => dispatch(actions.authLogin(username, password))
+    }
+}
+
+export default connect(mapStateToProps, mapDispathchToProps)(WrappedNormalLoginForm);
