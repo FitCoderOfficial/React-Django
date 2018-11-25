@@ -1,50 +1,78 @@
-import React from 'react';
-import { Form, Input, Button } from 'antd';
-import axios from 'axios';
+import React from "react";
+import { Form, Input, Button } from "antd";
+import { connect } from "react-redux";
+import axios from "axios";
 
 const FormItem = Form.Item;
 
+
 class CustomForm extends React.Component {
   
-    handleFormSubmit = (event, requestType, articleID) => {
-        const title = event.target.elements.title.value;
-        const content = event.target.elements.content.value;
-        
-        switch ( requestType ) {
-            case 'post':
-                return axios.post('http://127.0.0.1:8000/api/', {
-                    title: title,
-                    content: content
-                })
-                .then(res => console.log(res))
-                .catch(error => console.err(error));
-            case 'put':                
-                return axios.put(`http://127.0.0.1:8000/api/${articleID}/`, {
-                    title: title,
-                    content: content
-                })
-                .then(res => console.log(res))
-                .catch(error => console.err(error));
-        }
+  handleFormSubmit = async (event, requestType, articleID) => {
+    event.preventDefault();
+
+    const postObj = {
+      title: event.target.elements.title.value,
+      content: event.target.elements.content.value
     }
 
-    render() {
-        return (
-        <div>
-            <Form onSubmit={(event) => this.handleFormSubmit(event, this.props.requestType, this.props.articleID)}>
-            <FormItem label="제목">
-                <Input name="title" placeholder="제목을 적어주세요" />
-            </FormItem>
-            <FormItem label="내용">
-                <Input name="content" placeholder="내용을 적어주세요" />
-            </FormItem>
-            <FormItem>
-                <Button type="primary" htmlType="submit" >{this.props.btnText}</Button>
-            </FormItem>
-            </Form>
-        </div>
-        );
+    axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+    axios.defaults.xsrfCookieName = "csrftoken";
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Token ${this.props.token}`,
+    };
+    
+    if (requestType === "post") {
+      await axios.post("http://127.0.0.1:8000/api/create/", postObj)
+        .then(res => {
+          if (res.status === 201) {
+            this.props.history.push(`/`);
+          }
+        })
+    } else if (requestType === "put") {
+      await axios.put(`http://127.0.0.1:8000/api/${articleID}/update/`, postObj)
+        .then(res => {
+          if (res.status === 200) {
+            this.props.history.push(`/`);
+          }
+        })
     }
+  };
+
+  render() {
+    return (
+      <div>
+        <Form
+          onSubmit={event =>
+            this.handleFormSubmit(
+              event,
+              this.props.requestType,
+              this.props.articleID
+            )
+          }
+        >
+          <FormItem label="제목">
+            <Input name="title" placeholder="제목을 써주세요" />
+          </FormItem>
+          <FormItem label="내용">
+            <Input name="content" placeholder="내용을 입력해주세요" />
+          </FormItem>
+          <FormItem>
+            <Button type="primary" htmlType="submit">
+              {this.props.btnText}
+            </Button>
+          </FormItem>
+        </Form>
+      </div>
+    );
+  }
 }
 
-export default CustomForm;
+const mapStateToProps = state => {
+  return {
+    token: state.token
+  };
+};
+
+export default connect(mapStateToProps)(CustomForm);

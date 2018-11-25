@@ -1,49 +1,66 @@
-import React from 'react';
-import axios from 'axios';
+import React from "react";
+import axios from "axios";
+import { connect } from "react-redux";
+import { Button, Card } from "antd";
+import CustomForm from "../components/Form";
 
-import { Button, Card } from 'antd';
-
-import CustomForm from '../components/Form';
 
 class ArticleDetail extends React.Component {
+  state = {
+    article: {}
+  };
 
-    state = {
-        article: {}
-    }
+  componentDidMount() {
+    const articleID = this.props.match.params.articleID;
+    axios.get(`http://127.0.0.1:8000/api/${articleID}`).then(res => {
+      this.setState({
+        article: res.data
+      });
+    });
+  }
 
-    componentDidMount() {
-        const articleID = this.props.match.params.articleID; 
-        axios.get(`http://127.0.0.1:8000/api/${articleID}`) 
-            .then(res => {
-                this.setState({
-                    article: res.data
-                });     
-            })
-    }
+  handleDelete = event => {
+    event.preventDefault();
+    const articleID = this.props.match.params.articleID;
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Token ${this.props.token}`
+    };
+    axios.delete(`http://127.0.0.1:8000/api/${articleID}/delete/`)
+    .then(res => {
+      if (res.status === 204) {
+        this.props.history.push(`/`);
+      }
+    })
+  };
 
-    handleDelete = (event) => {
-        const articleID = this.props.match.params.articleID; 
-        axios.delete(`http://127.0.0.1:8000/api/${articleID}`);
-        this.props.history.push('/');
-        this.forceUpdate(); 
-    }
-
-    render() {
-        return (
-            <div>
-                <Card title={this.state.article.title}>
-                    <p>{this.state.article.content}</p>
-                </Card>
-                <CustomForm 
-                    requestType="put"
-                    articleID={this.props.match.params.articleID}
-                    btnText="수정하기"/>
-                <form onSubmit={this.handleDelete}>
-                    <Button type="danger" htmlType='submit'>삭제하기</Button>
-                </form>
-            </div>
-        )
-    }
+  render() {
+    return (
+      <div>
+        <Card title={this.state.article.title}>
+          <p> {this.state.article.content} </p>
+        </Card>
+        <CustomForm
+          {...this.props}
+          token={this.props.token}
+          requestType="put"
+          articleID={this.props.match.params.articleID}
+          btnText="수정하기"
+        />
+        <form onSubmit={this.handleDelete}>
+          <Button type="danger" htmlType="submit">
+            삭제하기
+          </Button>
+        </form>
+      </div>
+    );
+  }
 }
 
-export default ArticleDetail;
+const mapStateToProps = state => {
+  return {
+    token: state.token
+  };
+};
+
+export default connect(mapStateToProps)(ArticleDetail);

@@ -1,27 +1,24 @@
 import React from 'react';
-import { connect } from 'react-redux'
 import { Form, Icon, Input, Button, Spin } from 'antd';
+import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
-import * as actions from '../store/actions/auth'
+import * as actions from '../store/actions/auth';
 
 const FormItem = Form.Item;
 const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
 
-
-
-
 class NormalLoginForm extends React.Component {
-  handleSubmit = (e) => {
-    e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        this.props.onAuth(values.userName, values.password);
-      }
-    });
-    this.props.history.push('/');
-  }
+    handleSubmit = (e) => {
+      e.preventDefault();
+      this.props.form.validateFields((err, values) => {
+        if (!err) {
+          this.props.onAuth(values.userName, values.password);
+          this.props.history.push('/');
+        }
+      });
+    }
 
-  render() {
+    render() {
 
     let errorMessage = null;
     if (this.props.error) {

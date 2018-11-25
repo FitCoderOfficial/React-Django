@@ -1,14 +1,13 @@
 import React from 'react';
 import { Layout, Menu, Breadcrumb } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as actions from '../store/actions/auth';
-
 
 const { Header, Content, Footer } = Layout;
 
 class CustomLayout extends React.Component {
-    render () {
+    render() {
         return (
             <Layout className="layout">
                 <Header>
@@ -17,48 +16,50 @@ class CustomLayout extends React.Component {
                     theme="dark"
                     mode="horizontal"
                     defaultSelectedKeys={['2']}
-                    style={{ lineHeight: '64px', textAlign: 'left' }}
+                    style={{ lineHeight: '64px' }}
                 >
     
                 {
                     this.props.isAuthenticated ?
-
+    
                     <Menu.Item key="2" onClick={this.props.logout}>
                         로그아웃
                     </Menu.Item>
+    
                     :
+    
                     <Menu.Item key="2">
-                        <Link to='/login'>로그인</Link>
+                        <Link to="/login">로그인</Link>
                     </Menu.Item>
                 }
     
                     <Menu.Item key="1">
-                        <Link to='/'>목록</Link>
+                        <Link to="/">포스트</Link>
                     </Menu.Item>
+                    
                 </Menu>
                 </Header>
-                <Content style={{ padding: '0 50px', textAlign: 'left' }}>
+                <Content style={{ padding: '0 50px' }}>
                 <Breadcrumb style={{ margin: '16px 0' }}>
-                    <Breadcrumb.Item><Link to='/'>Home</Link></Breadcrumb.Item>
-                    <Breadcrumb.Item><Link to='/'>List</Link></Breadcrumb.Item>
+                    <Breadcrumb.Item><Link to="/">홈</Link></Breadcrumb.Item>
+                    <Breadcrumb.Item><Link to="/">목록</Link></Breadcrumb.Item>
                 </Breadcrumb>
                     <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
                         {this.props.children}
                     </div>
                 </Content>
                 <Footer style={{ textAlign: 'center' }}>
-                Ant Design ©2018 Created by Ant UED
+                Ant Design ©2016 Created by Ant UED
                 </Footer>
             </Layout>
         );
-    }    
-}
-
-
-const mapDispathchToProps = dispatch => {
-    return {
-        logout: () => dispatch(actions.logout())
     }
 }
 
-export default connect(null, mapDispathchToProps)(CustomLayout)
+const mapDispatchToProps = dispatch => {
+    return {
+        logout: () => dispatch(actions.logout()) 
+    }
+}
+
+export default withRouter(connect(null, mapDispatchToProps)(CustomLayout));
