@@ -6,7 +6,6 @@ import * as actions from '../store/actions/auth';
 
 const FormItem = Form.Item;
 
-
 class RegistrationForm extends React.Component {
   state = {
     confirmDirty: false,
@@ -22,6 +21,7 @@ class RegistrationForm extends React.Component {
             values.password,
             values.confirm
         );
+        this.props.history.push('/');
       }
     });
   }
@@ -34,7 +34,7 @@ class RegistrationForm extends React.Component {
   compareToFirstPassword = (rule, value, callback) => {
     const form = this.props.form;
     if (value && value !== form.getFieldValue('password')) {
-      callback('비밀번호가 일치하지 않아요!');
+      callback('비밀번호가 너무 짧습니다');
     } else {
       callback();
     }
@@ -48,65 +48,66 @@ class RegistrationForm extends React.Component {
     callback();
   }
 
+
   render() {
     const { getFieldDecorator } = this.props.form;
 
-     return (
+    return (
       <Form onSubmit={this.handleSubmit}>
-            
-            <FormItem>
-             {getFieldDecorator('userName', {
-                 rules: [{ required: true, message: '아이디를 넣어야죠!' }],
-             })(
-                 <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Username" />
-             )}
-             </FormItem>
-
+        
+        <FormItem>
+            {getFieldDecorator('userName', {
+                rules: [{ required: true, message: '아이디를 넣어주세요' }],
+            })(
+                <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="아이디" />
+            )}
+        </FormItem>
+        
         <FormItem>
           {getFieldDecorator('email', {
             rules: [{
-              type: 'email', message: '올바른 이메일 형식이 아닙니다!',
+              type: 'email', message: '올바른 이메일 형식이 아닙니다',
             }, {
-              required: true, message: '이메일을 넣어주세요!',
+              required: true, message: '이메일을 입력해주세요',
             }],
           })(
-            <Input prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Email"/>
+            <Input prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Email" />
           )}
         </FormItem>
 
         <FormItem>
           {getFieldDecorator('password', {
             rules: [{
-              required: true, message: '비밀번호를 입력해야죠!',
+              required: true, message: '비밀번호를 입력해주세요',
             }, {
               validator: this.validateToNextPassword,
             }],
           })(
-            <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="Password"/>
+            <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="비밀번호" />
           )}
         </FormItem>
 
         <FormItem>
           {getFieldDecorator('confirm', {
             rules: [{
-              required: true, message: 'Please confirm your password!',
+              required: true, message: '비밀번호가 일치하는지 확인해주세요',
             }, {
               validator: this.compareToFirstPassword,
             }],
           })(
-            <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="Password" onBlur={this.handleConfirmBlur} />
+            <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="비밀번호" onBlur={this.handleConfirmBlur} />
           )}
         </FormItem>
 
         <FormItem>
-            <Button type="primary" htmlType="submit" style={{marginRight: '10px'}}>
-                가입하기
-            </Button>
-            아니면
-                <NavLink 
-                style={{marginRight: '10px'}}
-                to='/login/'> 로그인
-            </NavLink>                    
+        <Button type="primary" htmlType="submit" style={{marginRight: '10px'}}>
+            가입하기
+        </Button>
+         
+        <NavLink 
+            style={{marginRight: '10px'}} 
+            to='/login/'> 로그인
+        </NavLink>
         </FormItem>
 
       </Form>
@@ -116,18 +117,17 @@ class RegistrationForm extends React.Component {
 
 const WrappedRegistrationForm = Form.create()(RegistrationForm);
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     return {
         loading: state.loading,
         error: state.error
     }
 }
 
-const mapDispathchToProps = dispatch => {
+const mapDispatchToProps = dispatch => {
     return {
-        onAuth: (username, email, password1, password2) => dispatch(actions.authSignup(username, email, password1, password2))
+        onAuth: (username, email, password1, password2) => dispatch(actions.authSignup(username, email, password1, password2)) 
     }
 }
 
-export default connect(mapStateToProps, mapDispathchToProps)(WrappedRegistrationForm)
-
+export default connect(mapStateToProps, mapDispatchToProps)(WrappedRegistrationForm);
