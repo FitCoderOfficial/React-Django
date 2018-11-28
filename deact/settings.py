@@ -13,7 +13,7 @@ SECRET_KEY = 'sdh68_y10dhh(8cq0rxmaxvc9*nmt=bt=af(_(8$=e0ug(x0%e'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['just-django-react-app']
+ALLOWED_HOSTS = ['just-django-react-app.heroku.com']
 
 
 # Application definition
@@ -56,7 +56,7 @@ ROOT_URLCONF = 'deact.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'build')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
